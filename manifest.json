@@ -12,7 +12,7 @@
         {
             "run_at" :"document_end",
             "matches": ["https://www.google.co.in/*"],
-            "js": ["src/js/script.js"],
+            "js": ["src/js/jquery.js", "src/js/content_script.js"],
             "css":["src/css/style.css"]
         }
     ],
