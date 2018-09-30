@@ -2,31 +2,48 @@ var queryResults = null;
 var selectedResult = null;
 var selectedIndex;
 
+function loadWebPage(result) {
+    // Add preview container 
+    // var resultContainer = $("#center_col #res.med");
+    // $(resultContainer).css("float", "left");
+    // $("<div style=\"margin-left: 100%; width: 590px; height: 1156px;\"><object type=\"text/html\" data=\"https://css-tricks.com/\" width=\"800px\" height=\"600px\" style=\"overflow:auto;border:5px ridge blue\"></object></div>").insertAfter(resultContainer);
+    
+    // Get URL of the page to be displayed
+    // $(result).find(".rc .r a").attr("href");
+
+    // Load web page on to the preview container
+}
+
 function onPressOfResult() {
     $(selectedResult).removeClass("selectedResult");
     selectedResult = this;
     $(selectedResult).addClass("selectedResult");
-    selectedIndex = $(this).attr("index");
+    selectedIndex = parseInt($(this).attr("index"));
+    loadWebPage(selectedResult);
 }
 
 function handleUpArrow() {
     if (selectedIndex > 0) {
-        console.log("Going UP!");
         $(queryResults[selectedIndex]).removeClass("selectedResult");
         selectedResult = queryResults[selectedIndex-1];
         $(selectedResult).addClass("selectedResult");
         selectedIndex -= 1;
+        loadWebPage(selectedResult);
     }
 }
 
 function handleDownArrow() {
     if (selectedIndex < queryResults.length-1) {
-        console.log("Going DOWN!");
         $(queryResults[selectedIndex]).removeClass("selectedResult");
         selectedResult = queryResults[selectedIndex+1];
         $(selectedResult).addClass("selectedResult");
         selectedIndex += 1;
+        loadWebPage(selectedResult);
     }
+}
+
+function showPreview() {
+    $("#main #cnt .mw #rcnt .col")
 }
 
 $(document).ready(function() {
@@ -40,6 +57,7 @@ $(document).ready(function() {
             $(queryResults[i]).attr("index", i);
             $(queryResults[i]).on("click", onPressOfResult);
         }
+        showPreview();
     }
 });
 
@@ -53,7 +71,7 @@ $(document).keydown(function(e) {
             handleDownArrow();
         break;
 
-        default: return; // exit this handler for other keys
+        default: return;
     }
-    e.preventDefault(); // prevent the default action (scroll / move caret)
+    e.preventDefault();
 });
