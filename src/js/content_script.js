@@ -2,24 +2,12 @@ var queryResults = null;
 var selectedResult = null;
 var selectedIndex;
 
-function loadWebPage(result) {
-    // Add preview container 
-    // var resultContainer = $("#center_col #res.med");
-    // $(resultContainer).css("float", "left");
-    // $("<div style=\"margin-left: 100%; width: 590px; height: 1156px;\"><object type=\"text/html\" data=\"https://css-tricks.com/\" width=\"800px\" height=\"600px\" style=\"overflow:auto;border:5px ridge blue\"></object></div>").insertAfter(resultContainer);
-    
-    // Get URL of the page to be displayed
-    // $(result).find(".rc .r a").attr("href");
-
-    // Load web page on to the preview container
-}
-
 function onPressOfResult() {
     $(selectedResult).removeClass("selectedResult");
     selectedResult = this;
     $(selectedResult).addClass("selectedResult");
     selectedIndex = parseInt($(this).attr("index"));
-    loadWebPage(selectedResult);
+    showPreview(selectedResult);
 }
 
 function handleUpArrow() {
@@ -28,7 +16,7 @@ function handleUpArrow() {
         selectedResult = queryResults[selectedIndex-1];
         $(selectedResult).addClass("selectedResult");
         selectedIndex -= 1;
-        loadWebPage(selectedResult);
+        showPreview(selectedResult);
     }
 }
 
@@ -38,12 +26,45 @@ function handleDownArrow() {
         selectedResult = queryResults[selectedIndex+1];
         $(selectedResult).addClass("selectedResult");
         selectedIndex += 1;
-        loadWebPage(selectedResult);
+        showPreview(selectedResult);
     }
 }
 
-function showPreview() {
-    $("#main #cnt .mw #rcnt .col")
+async function showPreview(result) {
+    // Get URL of the page to be displayed
+    var url = $(result).find(".rc .r a").attr("href");
+    console.log("Will load page : ", url);
+    
+    $.ajax({
+        url: "https://get-pagesource-gncelbtumd.now.sh/page_source?url=" + url,
+        async: false,
+        success: function(data) {
+           $("#previewContainerDiv").html(data);
+        },
+        error: function(error) {
+            console.log('HERE' + error);
+        } 
+    });
+
+    // $("#previewContainerObject").remove();
+    // Load web page on to the preview container
+    // var content = "<object id=\"previewContainerObject\" type=\"text/html\" data=\"" + url + "\" style=\"overflow:auto; width: inherit; height: inherit\"></object>";
+    // $.getJSON('https://www.whateverorigin.org/get?url=' + encodeURIComponent(url) + '&callback=?', function(data){
+    //     $("#previewContainerDiv").html(data.contents);
+    // });
+
+    // $.getJSON('https://anyorigin.com/get?url=' + url + '&callback=?', function(data){
+    //     $('#previewContainerDiv').html(data.contents);
+    // });
+    // $("#previewContainerDiv").attr("src", url);
+}
+
+function initPreviewContainer() {
+    console.log("Adding Preview Container");
+    var resultContainer = $("#center_col #res.med");
+    $(resultContainer).css("float", "left");
+    // $("<iframe id=\"previewContainerDiv\" sandbox=\"allow-scripts allow-same-origin allow-popups\" style=\"margin-left: 100%; border: 0px; width: 100%; height: 100%; overflow: hidden;\"></iframe>").insertAfter(resultContainer);
+    $("<div id=\"previewContainerDiv\" style=\"margin-left: 100%; border: 1px solid black; \"></div>").insertAfter(resultContainer);
 }
 
 $(document).ready(function() {
@@ -57,7 +78,8 @@ $(document).ready(function() {
             $(queryResults[i]).attr("index", i);
             $(queryResults[i]).on("click", onPressOfResult);
         }
-        showPreview();
+        initPreviewContainer();
+        showPreview(selectedResult);
     }
 });
 
